@@ -45,3 +45,7 @@ coverage/
 .cache/
 temp/
 tmp/
+scratch.txt
+path.txt
+
+/src/generated/prisma
