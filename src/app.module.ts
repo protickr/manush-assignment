@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PrismaModule } from '@database/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { AppController } from './app.controller';
@@ -15,6 +16,7 @@ import { GlobalExceptionFilter } from '@common/global-exception.filter';
       load: [redisConfig, serverConfig],
     }),
     RedisModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [
