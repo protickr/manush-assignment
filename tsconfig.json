@@ -23,10 +23,11 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "paths": {
-      "@modules/*": ["modules/*"],
+      "@cache/*": ["cache/*"],
       "@common/*": ["common/*"],
       "@config/*": ["config/*"],
-      "@database/*": ["database/*"]
+      "@database/*": ["database/*"], 
+      "@modules/*": ["modules/*"],
     }
   }
 }
