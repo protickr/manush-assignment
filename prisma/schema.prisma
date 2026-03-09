@@ -6,3 +6,24 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  ADMIN
+  SALES_REPRESENTATIVE
+  RETAILER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  phone         String    @unique
+  role          Role      @default(RETAILER)
+  passwordHash  String?
+  isActive      Boolean   @default(true)
+  isMobileValid Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  @@index([phone])
+}
