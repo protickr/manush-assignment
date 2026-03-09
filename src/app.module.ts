@@ -7,6 +7,8 @@ import { RedisModule } from '@cache/redis.module';
 import redisConfig from '@config/redis.config';
 import serverConfig from '@config/server.config';
 import { GlobalExceptionFilter } from '@common/global-exception.filter';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -17,6 +19,10 @@ import { GlobalExceptionFilter } from '@common/global-exception.filter';
     }),
     RedisModule,
     PrismaModule,
+
+    // application modules
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
