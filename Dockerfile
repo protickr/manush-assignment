@@ -1,22 +1,26 @@
 # ── Stage 1: Build ──
 FROM node:20-alpine AS builder
 
-RUN npm i -g pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+
+# Allow build scripts for prisma & nestjs, then install
+RUN pnpm config set enable-pre-post-scripts true && \
+    pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN npx prisma generate
-RUN pnpm run build
+RUN npx prisma generate && \
+    pnpm run build && \
+    ls -la dist/
 
 # ── Stage 2: Production ──
 FROM node:20-alpine
 
-RUN npm i -g pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
@@ -28,4 +32,4 @@ COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 8000
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]

@@ -1,0 +1,710 @@
+{
+  "info": {
+    "name": "Retailer Sales Representative API",
+    "description": "Backend API for managing Sales Representatives, Retailers, and geographical data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.access_token) {",
+                  "  pm.collectionVariables.set('token', res.access_token);",
+                  "  pm.test('Token saved', () => pm.expect(res.access_token).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"01700000000\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (SR Karim)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.access_token) {",
+                  "  pm.collectionVariables.set('token', res.access_token);",
+                  "  pm.test('Token saved', () => pm.expect(res.access_token).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"01711111111\",\n  \"password\": \"sr123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users (Admin)",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New SR\",\n  \"phone\": \"01733333333\",\n  \"role\": \"SALES_REPRESENTATIVE\",\n  \"password\": \"newsr123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "List All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "User UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "User UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "User UUID" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Regions (Admin)",
+      "item": [
+        {
+          "name": "Create Region",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Barisal\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/regions",
+              "host": ["{{baseUrl}}"],
+              "path": ["regions"]
+            }
+          }
+        },
+        {
+          "name": "List All Regions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/regions",
+              "host": ["{{baseUrl}}"],
+              "path": ["regions"]
+            }
+          }
+        },
+        {
+          "name": "Get Region by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/regions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["regions", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Region UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Region",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Region\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/regions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["regions", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Region UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Region",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/regions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["regions", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Region UUID" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Areas (Admin)",
+      "item": [
+        {
+          "name": "Create Area",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Barisal North\",\n  \"regionId\": \"<region-uuid>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/areas",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"]
+            }
+          }
+        },
+        {
+          "name": "List All Areas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/areas",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas"]
+            }
+          }
+        },
+        {
+          "name": "Get Area by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/areas/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Area UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Area",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Area\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/areas/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Area UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Area",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/areas/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["areas", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Area UUID" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Territories (Admin)",
+      "item": [
+        {
+          "name": "Create Territory",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Zone-1\",\n  \"areaId\": \"<area-uuid>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/territories",
+              "host": ["{{baseUrl}}"],
+              "path": ["territories"]
+            }
+          }
+        },
+        {
+          "name": "List All Territories",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/territories",
+              "host": ["{{baseUrl}}"],
+              "path": ["territories"]
+            }
+          }
+        },
+        {
+          "name": "Get Territory by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/territories/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["territories", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Territory UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Territory",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Territory\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/territories/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["territories", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Territory UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Territory",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/territories/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["territories", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Territory UUID" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Distributors (Admin)",
+      "item": [
+        {
+          "name": "Create Distributor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Distributor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/distributors",
+              "host": ["{{baseUrl}}"],
+              "path": ["distributors"]
+            }
+          }
+        },
+        {
+          "name": "List All Distributors",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/distributors",
+              "host": ["{{baseUrl}}"],
+              "path": ["distributors"]
+            }
+          }
+        },
+        {
+          "name": "Get Distributor by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/distributors/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["distributors", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Distributor UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Distributor",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Distributor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/distributors/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["distributors", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Distributor UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Distributor",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/distributors/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["distributors", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Distributor UUID" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Retailers",
+      "item": [
+        {
+          "name": "Create Retailer (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"uid\": \"R99999\",\n  \"name\": \"New Retailer\",\n  \"phone\": \"01999999999\",\n  \"points\": 0,\n  \"routes\": \"Route-1\",\n  \"territoryId\": \"<territory-uuid>\",\n  \"distributorId\": \"<distributor-uuid>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/retailers",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers"]
+            }
+          }
+        },
+        {
+          "name": "List Retailers (paginated + filter)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/retailers?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "regionId", "value": "", "disabled": true },
+                { "key": "areaId", "value": "", "disabled": true },
+                { "key": "territoryId", "value": "", "disabled": true },
+                { "key": "distributorId", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "My Assigned Retailers (SR)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/retailers/my?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers", "my"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "regionId", "value": "", "disabled": true },
+                { "key": "areaId", "value": "", "disabled": true },
+                { "key": "territoryId", "value": "", "disabled": true },
+                { "key": "distributorId", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Retailer by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/retailers/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Retailer UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Retailer (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Retailer\",\n  \"points\": 250\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/retailers/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Retailer UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "SR Update Retailer (Points/Routes/Notes)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"points\": 300,\n  \"routes\": \"Route-5\",\n  \"notes\": \"Good retailer\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/retailers/:id/sr-update",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers", ":id", "sr-update"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Retailer UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Retailer (Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/retailers/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers", ":id"],
+              "variable": [
+                { "key": "id", "value": "", "description": "Retailer UUID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bulk Assign Retailers to SR (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"retailerIds\": [\"<retailer-uuid-1>\", \"<retailer-uuid-2>\"],\n  \"srId\": \"<sr-uuid>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/retailers/bulk-assign",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers", "bulk-assign"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Unassign Retailers (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"retailerIds\": [\"<retailer-uuid-1>\", \"<retailer-uuid-2>\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/retailers/bulk-unassign",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers", "bulk-unassign"]
+            }
+          }
+        },
+        {
+          "name": "Import Retailers CSV (Admin)",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "CSV file with columns: uid, name, phone, points, routes, notes, region_id, area_id, territory_id, distributor_id"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/retailers/import-csv",
+              "host": ["{{baseUrl}}"],
+              "path": ["retailers", "import-csv"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
