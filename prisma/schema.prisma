@@ -26,4 +26,5 @@ model User {
   deletedAt     DateTime?
 
   @@index([phone])
+  @@map("users")
 }
