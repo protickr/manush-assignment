@@ -9,6 +9,9 @@ import serverConfig from '@config/server.config';
 import { GlobalExceptionFilter } from '@common/global-exception.filter';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { LocationsModule } from './modules/locations/locations.module';
+import { DistributorsModule } from './modules/distributors/distributors.module';
+import { RetailersModule } from './modules/retailers/retailers.module';
 import jwtConfig from '@config/jwt.config';
 
 @Module({
@@ -24,6 +27,9 @@ import jwtConfig from '@config/jwt.config';
     // application modules
     UsersModule,
     AuthModule,
+    LocationsModule,
+    DistributorsModule,
+    RetailersModule,
   ],
   controllers: [AppController],
   providers: [
