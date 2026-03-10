@@ -36,6 +36,9 @@ model Region {
   name      String
   areas     Area[]
   retailers Retailer[]
+
+  @@index([name])
+  @@map("regions")
 }
 
 model Area {
@@ -45,6 +48,9 @@ model Area {
   region      Region      @relation(fields: [regionId], references: [id])
   territories Territory[]
   retailers   Retailer[]
+
+  @@index([regionId])
+  @@map("areas")
 }
 
 model Territory {
@@ -53,12 +59,18 @@ model Territory {
   areaId    String
   area      Area       @relation(fields: [areaId], references: [id])
   retailers Retailer[]
+
+  @@index([areaId])
+  @@map("territories")
 }
 
 model Distributor {
   id        String     @id @default(uuid())
   name      String
   retailers Retailer[]
+
+  @@index([name])
+  @@map("distributors")
 }
 
 model Retailer {
@@ -85,4 +97,15 @@ model Retailer {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([assignedSrId])
+  @@index([regionId])
+  @@index([areaId])
+  @@index([territoryId])
+  @@index([distributorId])
+  @@index([assignedSrId, regionId])
+  @@index([assignedSrId, areaId])
+  @@index([assignedSrId, territoryId])
+  @@index([assignedSrId, distributorId])
+  @@map("retailers")
 }
