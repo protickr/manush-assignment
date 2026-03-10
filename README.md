@@ -59,7 +59,7 @@ docker-compose up --build
 
 # Run migrations & seed inside the container
 docker-compose exec app npx prisma db push
-docker-compose exec app npx prisma db seed
+docker-compose exec app pnpm db seed
 ```
 
 ---
