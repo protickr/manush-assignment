@@ -1,98 +1,201 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Retailer Sales Representative — Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A scalable backend API built with **NestJS**, **PostgreSQL** (via Prisma), and **Redis** for managing Sales Representatives, Retailers, and geographical data across Bangladesh.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Tech Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+| Layer        | Technology              |
+|-------------|-------------------------|
+| Runtime     | Node.js 20              |
+| Framework   | NestJS 11               |
+| Database    | PostgreSQL 16           |
+| ORM         | Prisma 7                |
+| Cache       | Redis 7 (via ioredis)   |
+| Auth        | JWT (Passport)          |
+| Docs        | Swagger / OpenAPI       |
+| Tests       | Jest                    |
+| Container   | Docker + docker-compose |
 
-## Project setup
+---
 
-```bash
-$ pnpm install
-```
+## Quick Start
 
-## Compile and run the project
+### Prerequisites
+
+- Node.js ≥ 20, pnpm
+- PostgreSQL 16
+- Redis 7
+
+### Local Setup
 
 ```bash
-# development
-$ pnpm run start
+# 1. Clone & install
+git clone https://github.com/protickr/manush-assignment.git
+cd manush-assignment
+pnpm install
 
-# watch mode
-$ pnpm run start:dev
+# 2. Configure environment
+cp .env.example .env   # or edit .env directly
+# DATABASE_URL, REDIS_HOST, JWT_SECRET, etc.
 
-# production mode
-$ pnpm run start:prod
+# 3. Run migrations & seed
+npx prisma db push
+npx prisma db seed
+
+# 4. Start dev server
+pnpm run dev
+# → http://localhost:8000
+# → Swagger: http://localhost:8000/api-docs
 ```
 
-## Run tests
+### Docker Setup
 
 ```bash
-# unit tests
-$ pnpm run test
+docker-compose up --build
+# → App: http://localhost:8000
+# → Swagger: http://localhost:8000/api-docs
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+# Run migrations & seed inside the container
+docker-compose exec app npx prisma db push
+docker-compose exec app npx prisma db seed
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Seed Data Credentials
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| Role  | Phone         | Password  |
+|-------|---------------|-----------|
+| Admin | 01700000000   | admin123  |
+| SR 1  | 01711111111   | sr123456  |
+| SR 2  | 01722222222   | sr123456  |
+
+---
+
+## API Endpoints
+
+### Auth
+| Method | Endpoint       | Auth | Description            |
+|--------|---------------|------|------------------------|
+| POST   | `/auth/login` | —    | Login & receive JWT    |
+
+### Users (Admin)
+| Method | Endpoint      | Auth  | Description       |
+|--------|--------------|-------|-------------------|
+| POST   | `/users`     | Admin | Create user       |
+| GET    | `/users`     | Admin | List all users    |
+| GET    | `/users/:id` | Admin, SR | Get user by ID |
+| PATCH  | `/users/:id` | Admin | Update user       |
+| DELETE | `/users/:id` | Admin | Soft-delete user  |
+
+### Regions (Admin)
+| Method | Endpoint        | Auth  | Description        |
+|--------|----------------|-------|--------------------|
+| POST   | `/regions`     | Admin | Create region      |
+| GET    | `/regions`     | Admin | List all regions   |
+| GET    | `/regions/:id` | Admin | Get region by ID   |
+| PATCH  | `/regions/:id` | Admin | Update region      |
+| DELETE | `/regions/:id` | Admin | Delete region      |
+
+### Areas (Admin)
+| Method | Endpoint      | Auth  | Description      |
+|--------|--------------|-------|------------------|
+| POST   | `/areas`     | Admin | Create area      |
+| GET    | `/areas`     | Admin | List all areas   |
+| GET    | `/areas/:id` | Admin | Get area by ID   |
+| PATCH  | `/areas/:id` | Admin | Update area      |
+| DELETE | `/areas/:id` | Admin | Delete area      |
+
+### Territories (Admin)
+| Method | Endpoint            | Auth  | Description          |
+|--------|---------------------|-------|----------------------|
+| POST   | `/territories`     | Admin | Create territory     |
+| GET    | `/territories`     | Admin | List all territories |
+| GET    | `/territories/:id` | Admin | Get territory by ID  |
+| PATCH  | `/territories/:id` | Admin | Update territory     |
+| DELETE | `/territories/:id` | Admin | Delete territory     |
+
+### Distributors (Admin)
+| Method | Endpoint             | Auth  | Description           |
+|--------|---------------------|-------|-----------------------|
+| POST   | `/distributors`     | Admin | Create distributor    |
+| GET    | `/distributors`     | Admin | List all distributors |
+| GET    | `/distributors/:id` | Admin | Get distributor by ID |
+| PATCH  | `/distributors/:id` | Admin | Update distributor    |
+| DELETE | `/distributors/:id` | Admin | Delete distributor    |
+
+### Retailers
+| Method | Endpoint                   | Auth     | Description                              |
+|--------|---------------------------|----------|------------------------------------------|
+| POST   | `/retailers`              | Admin    | Create retailer                          |
+| GET    | `/retailers`              | Admin, SR | List retailers (paginated, filterable)  |
+| GET    | `/retailers/my`           | SR       | List only assigned retailers             |
+| GET    | `/retailers/:id`          | Admin, SR | Get retailer details                    |
+| PATCH  | `/retailers/:id`          | Admin    | Update retailer (all fields)             |
+| PATCH  | `/retailers/:id/sr-update`| SR       | Update Points, Routes, Notes only        |
+| DELETE | `/retailers/:id`          | Admin    | Delete retailer                          |
+| POST   | `/retailers/bulk-assign`  | Admin    | Bulk assign retailers to SR              |
+| POST   | `/retailers/bulk-unassign`| Admin    | Bulk unassign retailers                  |
+| POST   | `/retailers/import-csv`   | Admin    | Bulk import retailers from CSV           |
+
+**Query Parameters** for `GET /retailers` and `GET /retailers/my`:
+- `page`, `limit` — pagination
+- `search` — search by name, UID, or phone
+- `regionId`, `areaId`, `territoryId`, `distributorId` — filters
+
+---
+
+## Running Tests
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+pnpm run test          # run all tests
+pnpm run test:cov      # with coverage
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+15 unit tests across 3 suites: AuthService, LocationsService, RetailersService.
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## Project Structure
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```
+src/
+├── cache/                    # Redis service (global)
+├── common/                   # Global exception filter
+├── config/                   # Config loaders (redis, server, jwt)
+├── database/                 # Prisma service & module
+├── modules/
+│   ├── auth/                 # JWT auth, guards, roles
+│   ├── users/                # User CRUD
+│   ├── locations/            # Region → Area → Territory CRUD
+│   │   ├── controllers/      # Separate controller per entity
+│   │   └── dto/              # DTOs with class-validator
+│   ├── distributors/         # Distributor CRUD
+│   └── retailers/            # Retailer CRUD, SR endpoints, CSV import
+├── app.module.ts
+└── main.ts                   # Bootstrap + Swagger setup
+```
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Scaling Approach
 
-## Stay in touch
+This backend is designed to handle ~1 million retailers with fast queries for SRs who only need ~70 records each:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. **Denormalized Geography**: The `retailers` table stores `region_id`, `area_id`, and `territory_id` directly (resolved from the hierarchy on write). This allows flat, indexed queries like `WHERE assigned_sr_id = ? AND region_id = ?` without expensive SQL JOINs at read time.
+
+2. **Composite Indexes**: The database has composite indexes on `(assigned_sr_id, region_id)`, `(assigned_sr_id, area_id)`, etc. — specifically optimized for the SR filter+list workload.
+
+3. **Redis Caching**: Individual retailer details are cached in Redis with automatic invalidation on mutation. For the SR list view (~70 records), the DB query is already very fast due to indexes, but cache can be layered for hot paths.
+
+4. **Batch CSV Import**: Large retailer imports use Node.js streams (no full-file buffering) and Prisma `createMany` in batches of 1,000, keeping memory flat even for 100k+ row files. Geography resolution is done from an in-memory cache built before the import begins.
+
+5. **Horizontal Scaling**: The app is stateless (JWT + Redis for session-less auth and caching). Multiple app instances can be deployed behind a load balancer. PostgreSQL read replicas can handle read-heavy SR workloads. For very large imports, the CSV processing can be offloaded to a BullMQ background queue.
+
+---
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT

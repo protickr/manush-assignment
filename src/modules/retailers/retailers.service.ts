@@ -5,6 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
+import { RedisService } from '../../cache/redis.service';
 import { CreateRetailerDto } from './dto/create-retailer.dto';
 import { UpdateRetailerDto } from './dto/update-retailer.dto';
 import { SrUpdateRetailerDto } from './dto/sr-update-retailer.dto';
@@ -12,12 +13,16 @@ import { Readable } from 'stream';
 import csvParser from 'csv-parser';
 
 const BATCH_SIZE = 1000;
+const CACHE_TTL = 3600; // 1 hour
 
 @Injectable()
 export class RetailersService {
   private readonly logger = new Logger(RetailersService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
+  ) {}
 
   /**
    * Resolve the full hierarchy when only the most specific ID is provided.
@@ -115,6 +120,11 @@ export class RetailersService {
   }
 
   async findOne(id: string) {
+    // Check cache first
+    const cacheKey = `retailer:${id}`;
+    const cached = await this.redis.get(cacheKey);
+    if (cached) return JSON.parse(cached);
+
     const retailer = await this.prisma.retailer.findUnique({
       where: { id },
       include: {
@@ -126,21 +136,31 @@ export class RetailersService {
       },
     });
     if (!retailer) throw new NotFoundException('Retailer not found');
+
+    await this.redis.set(cacheKey, retailer, CACHE_TTL);
     return retailer;
+  }
+
+  private async invalidateRetailerCache(id: string) {
+    await this.redis.del(`retailer:${id}`);
   }
 
   async update(id: string, dto: UpdateRetailerDto) {
     await this.findOne(id);
     const resolved = await this.resolveHierarchy(dto);
-    return this.prisma.retailer.update({
+    const updated = await this.prisma.retailer.update({
       where: { id },
       data: { ...dto, ...resolved },
     });
+    await this.invalidateRetailerCache(id);
+    return updated;
   }
 
   async remove(id: string) {
     await this.findOne(id);
-    return this.prisma.retailer.delete({ where: { id } });
+    const deleted = await this.prisma.retailer.delete({ where: { id } });
+    await this.invalidateRetailerCache(id);
+    return deleted;
   }
 
   // ─── SR-specific ──────────────────────────────────────────
@@ -171,26 +191,32 @@ export class RetailersService {
         'You can only update retailers assigned to you',
       );
     }
-    return this.prisma.retailer.update({
+    const updated = await this.prisma.retailer.update({
       where: { id: retailerId },
       data: dto,
     });
+    await this.invalidateRetailerCache(retailerId);
+    return updated;
   }
 
   // ─── Bulk Assign / Unassign ───────────────────────────────
 
   async bulkAssign(retailerIds: string[], srId: string) {
-    return this.prisma.retailer.updateMany({
+    const result = await this.prisma.retailer.updateMany({
       where: { id: { in: retailerIds } },
       data: { assignedSrId: srId },
     });
+    await Promise.all(retailerIds.map((id) => this.invalidateRetailerCache(id)));
+    return result;
   }
 
   async bulkUnassign(retailerIds: string[]) {
-    return this.prisma.retailer.updateMany({
+    const result = await this.prisma.retailer.updateMany({
       where: { id: { in: retailerIds } },
       data: { assignedSrId: null },
     });
+    await Promise.all(retailerIds.map((id) => this.invalidateRetailerCache(id)));
+    return result;
   }
 
   // ─── CSV Bulk Import ─────────────────────────────────────
