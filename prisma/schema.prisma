@@ -25,6 +25,64 @@ model User {
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
+  assignedRetailers Retailer[] // For Sales Representatives
+
   @@index([phone])
   @@map("users")
+}
+
+model Region {
+  id        String     @id @default(uuid())
+  name      String
+  areas     Area[]
+  retailers Retailer[]
+}
+
+model Area {
+  id          String      @id @default(uuid())
+  name        String
+  regionId    String
+  region      Region      @relation(fields: [regionId], references: [id])
+  territories Territory[]
+  retailers   Retailer[]
+}
+
+model Territory {
+  id        String     @id @default(uuid())
+  name      String
+  areaId    String
+  area      Area       @relation(fields: [areaId], references: [id])
+  retailers Retailer[]
+}
+
+model Distributor {
+  id        String     @id @default(uuid())
+  name      String
+  retailers Retailer[]
+}
+
+model Retailer {
+  id     String  @id @default(uuid())
+  uid    String  @unique
+  name   String
+  phone  String?
+  points Int     @default(0)
+  routes String?
+  notes  String?
+
+  regionId    String?
+  region      Region?    @relation(fields: [regionId], references: [id])
+  areaId      String?
+  area        Area?      @relation(fields: [areaId], references: [id])
+  territoryId String?
+  territory   Territory? @relation(fields: [territoryId], references: [id])
+
+  distributorId String?
+  distributor   Distributor? @relation(fields: [distributorId], references: [id])
+
+  assignedSrId String?
+  assignedSr   User?   @relation(fields: [assignedSrId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
