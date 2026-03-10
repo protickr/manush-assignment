@@ -3,13 +3,13 @@ import { UsersRepository } from './users.repository';
 import { RedisService } from '../../cache/redis.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-// bcrypt may lack types; require for safety
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-const bcrypt = require('bcryptjs');
+import { User } from '@prisma/client';
+
+// import { bcrypt } from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
-  private readonly CACHE_TTL = 3600; // 1 hour
+  private readonly CACHE_TTL = Number(process.env.CACHE_TTL) || 3600;
 
   constructor(
     private usersRepository: UsersRepository,
@@ -26,7 +26,7 @@ export class UsersService {
     // Try to get from cache
     const cachedUser = await this.redisService.get(cacheKey);
     if (cachedUser) {
-      return JSON.parse(cachedUser) as any;
+      return JSON.parse(cachedUser) as User;
     }
 
     // If not in cache, fetch from database
@@ -39,29 +39,11 @@ export class UsersService {
   }
 
   async findByPhone(phone: string) {
-    const cacheKey = `user:phone:${phone}`;
-
-    // Try to get from cache
-    const cachedUser = await this.redisService.get(cacheKey);
-    if (cachedUser) {
-      return JSON.parse(cachedUser) as any;
-    }
-
-    // If not in cache, fetch from database
-    const user = await this.usersRepository.findByPhone(phone);
-
-    // Store in cache if user exists
-    if (user) {
-      await this.redisService.set(cacheKey, user, this.CACHE_TTL);
-    }
-
-    return user;
+    return await this.usersRepository.findByPhone(phone);
   }
 
   async create(createUserDto: CreateUserDto) {
     const user = await this.usersRepository.create(createUserDto);
-
-    // Invalidate all users cache
     await this.redisService.del('users:all');
 
     return user;

@@ -1,8 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
-import { Role } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +11,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(phone: string, password: string) {
+  async validateUser(phone: string, password: string): Promise<User | null> {
     const user = await this.usersService.findByPhone(phone);
     if (!user || !user.passwordHash) return null;
 
@@ -19,14 +19,14 @@ export class AuthService {
     if (!isMatch) return null;
 
     // Only Admins & Sales Reps can log in
-    if (![Role.ADMIN, Role.SALESREPRESENTATIVE].includes(user.role)) {
+    if (user.role !== Role.ADMIN && user.role !== Role.SALES_REPRESENTATIVE) {
       return null;
     }
 
     return user;
   }
 
-  async login(user: any) {
+  login(user: User) {
     const payload = { sub: user.id, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),

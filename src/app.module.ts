@@ -9,13 +9,14 @@ import serverConfig from '@config/server.config';
 import { GlobalExceptionFilter } from '@common/global-exception.filter';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import jwtConfig from '@config/jwt.config';
 
 @Module({
   imports: [
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [redisConfig, serverConfig],
+      load: [redisConfig, serverConfig, jwtConfig],
     }),
     RedisModule,
     PrismaModule,

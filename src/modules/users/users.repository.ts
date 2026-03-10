@@ -21,8 +21,8 @@ export class UsersRepository {
   }
 
   async findByPhone(phone: string) {
-    // cast to any because generated types may differ
-    return this.prisma.user.findUnique({ where: { phone } as any });
+    const user = await this.prisma.user.findUnique({ where: { phone } });
+    return user;
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -53,14 +53,14 @@ export class UsersRepository {
 
     return this.prisma.user.update({
       where: { id },
-      data,
+      data: updateUserDto,
     });
   }
 
   async remove(id: string) {
     return this.prisma.user.update({
       where: { id },
-      data: { deletedAt: new Date() } as any,
+      data: { deletedAt: new Date() },
     });
   }
 }
