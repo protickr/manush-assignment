@@ -193,9 +193,3 @@ This backend is designed to handle ~1 million retailers with fast queries for SR
 4. **Batch CSV Import**: Large retailer imports use Node.js streams (no full-file buffering) and Prisma `createMany` in batches of 1,000, keeping memory flat even for 100k+ row files. Geography resolution is done from an in-memory cache built before the import begins.
 
 5. **Horizontal Scaling**: The app is stateless (JWT + Redis for session-less auth and caching). Multiple app instances can be deployed behind a load balancer. PostgreSQL read replicas can handle read-heavy SR workloads. For very large imports, the CSV processing can be offloaded to a BullMQ background queue.
-
----
-
-## License
-
-MIT
